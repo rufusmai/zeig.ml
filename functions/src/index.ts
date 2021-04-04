@@ -1,9 +1,14 @@
-import * as functions from "firebase-functions";
+import * as admin from 'firebase-admin'
 
-// Start writing Firebase Functions
-// https://firebase.google.com/docs/functions/typescript
+import app from './urlShortener/app'
+// import collector from './clearOutdatedUrls'
 
-export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
-});
+admin.initializeApp()
+
+const urlShortener = app
+// const clearOutdatedUrls = collector
+
+export {
+  urlShortener,
+  // clearOutdatedUrls
+}
