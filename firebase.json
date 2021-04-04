@@ -9,7 +9,7 @@
     ]
   },
   "hosting": {
-    "public": "build",
+    "public": "out",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -17,8 +17,20 @@
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/dashboard",
         "destination": "/index.html"
+      },
+      {
+        "source": "/authorize",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/**",
+        "function": "urlShortener"
       }
     ]
   },
@@ -34,6 +46,9 @@
     },
     "hosting": {
       "port": 5000
+    },
+    "pubsub": {
+      "port": "8085"
     },
     "ui": {
       "enabled": true
