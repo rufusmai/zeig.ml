@@ -1,18 +1,25 @@
 import { Request, Response } from 'express'
 import { getUrlRoute, UrlRoute } from '../lib/db'
 
-export default async (req: Request, res: Response) => {
+export default async (req: Request, res: Response): Promise<void> => {
   const {
-    params: { slug }
+    params: { slug },
   } = req
 
-  const route: UrlRoute = await getUrlRoute(slug)
+  const route: UrlRoute | undefined = await getUrlRoute(slug)
+
+  if (!route) {
+    res.status(404).json({
+      msg: 'Url with that slug does not exist!',
+    })
+    return
+  }
 
   res.json({
     slug: route.slug,
     url: route.url,
-    password: route.hasOwnProperty('password'),
+    password: Object.prototype.hasOwnProperty.call(route, 'password'),
     created: route.created,
-    validUntil: route.validUntil
+    validUntil: route.validUntil,
   })
 }

@@ -1,12 +1,12 @@
 import * as admin from 'firebase-admin'
 import { Request, Response } from 'express'
 
-export default async (request: Request, response: Response) => {
+export default async (request: Request, response: Response): Promise<void> => {
   const {
-    params: { slug }
+    params: { slug },
   } = request
 
-  const entry = admin.database().ref(`routes/${slug}`);
+  const entry = admin.database().ref(`routes/${slug}`)
   const result = await entry.get()
   const val = result.val()
 
@@ -15,8 +15,8 @@ export default async (request: Request, response: Response) => {
     return
   }
 
-  response.redirect(val.url);
+  response.redirect(val.url)
   entry.update({
-    visits: admin.database.ServerValue.increment(1)
+    visits: admin.database.ServerValue.increment(1),
   })
 }

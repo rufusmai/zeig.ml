@@ -14,8 +14,8 @@ export const checkAuthentication = async (req: Request, route: UrlRoute): Promis
 
     if (authType === 'Bearer') {
       return await verifyToken(authData)
-        .then(tokenVerifier)
-        .catch(errorHandler)
+          .then(tokenVerifier)
+          .catch(errorHandler)
     } else if (authType === 'Basic') {
       const data = Buffer.from(authorization[1], 'base64').toString('ascii')
       const password = data.split(':')[1]
@@ -24,8 +24,8 @@ export const checkAuthentication = async (req: Request, route: UrlRoute): Promis
     }
   } else if (req.query.token) {
     return await verifyToken(<string> req.query.token)
-      .then(tokenVerifier)
-      .catch(errorHandler)
+        .then(tokenVerifier)
+        .catch(errorHandler)
   }
 
   return false

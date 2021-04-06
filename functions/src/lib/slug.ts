@@ -1,4 +1,6 @@
 import * as admin from 'firebase-admin'
+import { database } from 'firebase-admin/lib/database'
+import DataSnapshot = database.DataSnapshot
 
 const forbiddenSlugs = ['url', 'dashboard', 'api', 'docs', 'app']
 
@@ -8,10 +10,10 @@ export const checkSlug = async (slug: string): Promise<boolean> => {
   }
 
   return await admin
-    .database()
-    .ref(`routes/${slug}`)
-    .get()
-    .then(result => !result.exists());
+      .database()
+      .ref(`routes/${slug}`)
+      .get()
+      .then((result: DataSnapshot) => !result.exists())
 }
 
 export const getSlug = async (custom: string, replaceIfExists: boolean): Promise<string> => {
@@ -19,7 +21,7 @@ export const getSlug = async (custom: string, replaceIfExists: boolean): Promise
   if (custom) {
     if (!await checkSlug(custom)) {
       if (!replaceIfExists) {
-        throw 'Slug not available'
+        throw new Error('Slug not available')
       }
     } else {
       slug = custom

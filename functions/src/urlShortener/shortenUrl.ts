@@ -4,15 +4,15 @@ import { getSlug } from '../lib/slug'
 import { hashPassword } from '../lib/auth/password'
 import * as moment from 'moment'
 
-export default async (request: Request, response: Response) => {
+export default async (request: Request, response: Response): Promise<void> => {
   const { body } = request
 
   if (!(body && body.url)) {
     response
-      .status(400)
-      .json({
-        msg: 'Missing parameters'
-      })
+        .status(400)
+        .json({
+          msg: 'Missing parameters',
+        })
     return
   }
 
@@ -21,10 +21,10 @@ export default async (request: Request, response: Response) => {
     slug = await getSlug(body.slug, body.replaceSlugIfExists)
   } catch (err) {
     response
-      .status(400)
-      .json({
-        msg: err
-      })
+        .status(400)
+        .json({
+          msg: err,
+        })
     return
   }
 
@@ -33,10 +33,10 @@ export default async (request: Request, response: Response) => {
 
     if (body.validUntil > max.unix()) {
       response
-        .status(400)
-        .json({
-          msg: 'validUntil may not be greater than one day ahead!'
-        })
+          .status(400)
+          .json({
+            msg: 'validUntil may not be greater than one day ahead!',
+          })
       return
     }
   }
@@ -46,14 +46,14 @@ export default async (request: Request, response: Response) => {
     created: moment().unix(),
     password: body.password ? await hashPassword(body.password) : null,
     validUntil: body.validUntil ?? null,
-    visits: 0
+    visits: 0,
   })
 
   response.json({
     msg: 'Successfully saved url!',
     url: `https://${request.hostname}/${slug}`,
     slug,
-    password: body.hasOwnProperty('password'),
+    password: Object.hasOwnProperty.call(body, 'password'),
     validUntil: body.validUntil ?? null,
   })
 }

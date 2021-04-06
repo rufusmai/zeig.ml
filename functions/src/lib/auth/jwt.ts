@@ -1,7 +1,6 @@
 import { UrlRoute } from '../db'
 import * as functions from 'firebase-functions'
-
-const jwt = require('jsonwebtoken')
+import jwt = require('jsonwebtoken')
 
 export type Payload = {
   slug: string
@@ -9,7 +8,9 @@ export type Payload = {
 
 export const issueToken = (urlRoute: UrlRoute): Promise<string> => {
   return new Promise((resolve, reject) => {
-    return jwt.sign({}, functions.config().jwt.secret, (err: string, token: string) => {
+    return jwt.sign({
+      slug: urlRoute.slug,
+    }, functions.config().jwt.secret, (err: Error | null, token: string | undefined) => {
       if (err) {
         reject(err)
       } else {
@@ -21,11 +22,12 @@ export const issueToken = (urlRoute: UrlRoute): Promise<string> => {
 
 export const verifyToken = async (token: string): Promise<Payload> => {
   return new Promise((resolve, reject) => {
-    jwt.verify(token, functions.config().jwt.secret, (err: string, payload: Payload) => {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    jwt.verify(token, functions.config().jwt.secret, (err: Error | null, payload: object | undefined) => {
       if (err) {
         reject(err)
       } else {
-        resolve(payload)
+        resolve(<Payload> payload)
       }
     })
   })

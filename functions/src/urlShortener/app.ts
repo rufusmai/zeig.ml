@@ -5,8 +5,8 @@ import getUrl from './getUrl'
 import resolveUrl from './resolveUrl'
 import { verifyPassword } from '../lib/auth/password'
 
-const express = require('express')
-const cors = require('cors')
+import express = require('express')
+import cors = require('cors')
 
 const app = express()
 const corsMiddle = cors({ origin: true })
