@@ -2,14 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-    html, body, #__next {
-        @apply h-full
-    }
-}
-
 @layer utilities {
     .transition-max-width {
         transition-property: max-width;
+    }
+
+    .drop-shadow-logo {
+        filter: drop-shadow(2px 2px 6px #ffffffcc);
+    }
+
+    .transition-placeholder::placeholder {
+        transition: color ease-in-out .3s;
     }
 }

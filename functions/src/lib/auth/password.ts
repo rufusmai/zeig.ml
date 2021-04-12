@@ -9,22 +9,21 @@ export const checkPassword = async (password: string, hashedPassword: string): P
 
 export const hashPassword = async (password: string): Promise<string> => await bcrypt.hash(password, 10)
 
-export const verifyPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const route: UrlRoute | undefined = await getUrlRoute(req.params.slug)
+export const verifyPassword = (req: Request, res: Response, next: NextFunction): void => {
+  getUrlRoute(req.params.slug)
+      .then(async (route: UrlRoute) => {
+        if (route.password && !await checkAuthentication(req, route)) {
+          res.status(403).json({
+            msg: 'Missing or invalid Authorization!',
+          }).end()
+          return
+        }
 
-  if (!route) {
-    res.status(404).json({
-      msg: 'Url with that slug does not exist!',
-    })
-    return
-  }
-
-  if (route.password && !await checkAuthentication(req, route)) {
-    res.status(401).json({
-      msg: 'Missing or invalid Authorization!',
-    })
-    return
-  }
-
-  next()
+        next()
+      })
+      .catch(() => {
+        res.status(404).json({
+          msg: 'Url with that slug does not exist!',
+        }).end()
+      })
 }

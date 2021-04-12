@@ -1,8 +1,8 @@
 import * as admin from 'firebase-admin'
 import { database } from 'firebase-admin/lib/database'
-import DataSnapshot = database.DataSnapshot
+import { getRandomSlug } from '../../../lib/slug'
 
-const forbiddenSlugs = ['url', 'dashboard', 'api', 'docs', 'app']
+const forbiddenSlugs = ['url', 'dashboard', 'authorize', 'error', 'api', 'docs', 'app']
 
 export const checkSlug = async (slug: string): Promise<boolean> => {
   if (forbiddenSlugs.includes(slug)) {
@@ -13,7 +13,7 @@ export const checkSlug = async (slug: string): Promise<boolean> => {
       .database()
       .ref(`routes/${slug}`)
       .get()
-      .then((result: DataSnapshot) => !result.exists())
+      .then((result: database.DataSnapshot) => !result.exists())
 }
 
 export const getSlug = async (custom: string, replaceIfExists: boolean): Promise<string> => {
@@ -32,13 +32,12 @@ export const getSlug = async (custom: string, replaceIfExists: boolean): Promise
     let randSlug
 
     do {
-      randSlug = randomSlug()
+      randSlug = getRandomSlug()
     } while (!await checkSlug(randSlug))
 
     slug = randSlug
   }
 
-  return slug
+  return <string> slug
 }
 
-export const randomSlug = (): string => Math.random().toString(36).substring(7)

@@ -1,8 +1,7 @@
 import * as admin from 'firebase-admin'
 import * as functions from 'firebase-functions'
-import * as moment from 'moment'
 import { database } from 'firebase-admin/lib/database'
-import DataSnapshot = database.DataSnapshot
+import moment from 'moment'
 
 export default functions.pubsub.schedule('every 1 day')
     .onRun(() => {
@@ -14,7 +13,7 @@ export default functions.pubsub.schedule('every 1 day')
           .orderByChild('validUntil')
           .startAt(moment().unix())
           .get()
-          .then((data: DataSnapshot) => {
+          .then((data: database.DataSnapshot) => {
             const updates: { [key: string]: null } = {}
             data.forEach((child) => {
               updates[<string> child.key] = null

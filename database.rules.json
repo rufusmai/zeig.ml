@@ -1,6 +1,11 @@
 {
   "rules": {
-    ".read": false,
+    "routes": {
+      "$route": {
+        ".read": "data.child('uid').val() === auth.uid"
+      },
+      ".indexOn": "uid"
+    },
     ".write": false
   }
 }

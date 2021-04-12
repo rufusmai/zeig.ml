@@ -1,8 +1,11 @@
 import * as admin from 'firebase-admin'
+import { auth } from 'firebase-admin/lib/auth'
 import { Request, Response } from 'express'
+import moment from 'moment'
+import { getUrlRoutesOfUser, UrlRoute } from '../lib/db'
 import { getSlug } from '../lib/slug'
 import { hashPassword } from '../lib/auth/password'
-import * as moment from 'moment'
+import { getUser } from '../lib/auth/firebase'
 
 export default async (request: Request, response: Response): Promise<void> => {
   const { body } = request
@@ -23,9 +26,32 @@ export default async (request: Request, response: Response): Promise<void> => {
     response
         .status(400)
         .json({
-          msg: err,
+          msg: 'This slug already exists!',
         })
     return
+  }
+
+  const user: auth.DecodedIdToken = getUser()
+  if (user.premium !== true) {
+    let count = 0
+
+    const minDate = moment().subtract(1, 'd').unix()
+    const routes: { [slug: string]: UrlRoute } = await getUrlRoutesOfUser(user.sub)
+
+    for (const route of Object.values(routes)) {
+      if (route.created > minDate) {
+        count++
+      }
+    }
+
+    if (count >= 5) {
+      response
+          .status(429)
+          .json({
+            msg: 'Max url count exceeded!',
+          })
+      return
+    }
   }
 
   if (body.validUntil) {
@@ -43,6 +69,7 @@ export default async (request: Request, response: Response): Promise<void> => {
 
   admin.database().ref(`routes/${slug}`).set({
     url: body.url,
+    uid: getUser().uid,
     created: moment().unix(),
     password: body.password ? await hashPassword(body.password) : null,
     validUntil: body.validUntil ?? null,
@@ -53,7 +80,7 @@ export default async (request: Request, response: Response): Promise<void> => {
     msg: 'Successfully saved url!',
     url: `https://${request.hostname}/${slug}`,
     slug,
-    password: Object.hasOwnProperty.call(body, 'password'),
+    password: !!body.password,
     validUntil: body.validUntil ?? null,
   })
 }

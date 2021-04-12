@@ -17,12 +17,12 @@
     ],
     "rewrites": [
       {
-        "source": "/dashboard",
-        "destination": "/index.html"
+        "source": "/authorize",
+        "destination": "/authorize.html"
       },
       {
-        "source": "/authorize",
-        "destination": "/index.html"
+        "source": "/error",
+        "destination": "/error.html"
       },
       {
         "source": "/",

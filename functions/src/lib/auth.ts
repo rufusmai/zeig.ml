@@ -1,7 +1,7 @@
 import { Request } from 'express'
+import { UrlRoute } from './db'
 import { Payload, verifyToken } from './auth/jwt'
 import { checkPassword } from './auth/password'
-import { UrlRoute } from './db'
 
 export const checkAuthentication = async (req: Request, route: UrlRoute): Promise<boolean> => {
   const tokenVerifier = ({ slug }: Payload): boolean => req.params.slug === slug

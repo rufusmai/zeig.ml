@@ -1,5 +1,5 @@
-import { UrlRoute } from '../db'
 import * as functions from 'firebase-functions'
+import { UrlRoute } from '../db'
 import jwt = require('jsonwebtoken')
 
 export type Payload = {
@@ -11,7 +11,7 @@ export const issueToken = (urlRoute: UrlRoute): Promise<string> => {
     return jwt.sign({
       slug: urlRoute.slug,
     }, functions.config().jwt.secret, (err: Error | null, token: string | undefined) => {
-      if (err) {
+      if (err || !token) {
         reject(err)
       } else {
         resolve(token)

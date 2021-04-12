@@ -1,9 +1,12 @@
 import * as admin from 'firebase-admin'
 
+import app from './urlShortener/app'
+import scheduler from './clearOutdatedUrls'
+
 admin.initializeApp()
 
-import urlShortener = require('./urlShortener/app')
-import clearOutdatedUrls = require('./clearOutdatedUrls')
+const urlShortener = app
+const clearOutdatedUrls = scheduler
 
 export {
   urlShortener,

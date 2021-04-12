@@ -2,7 +2,8 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
 
 module.exports = {
-  purge: ['./pages/**/*.js', './components/**/*.js'],
+  mode: 'jit',
+  purge: ['./pages/**/*.tsx', './components/**/*.tsx'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     container: {
@@ -15,13 +16,14 @@ module.exports = {
       colors: {
         cyan: colors.cyan,
         lightBlue: colors.lightBlue
-      }
+      },
+      maxWidth: {
+        screen: '100vw',
+      },
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [
-    //require('@tailwindcss/forms')
-  ],
+  plugins: [],
 }
