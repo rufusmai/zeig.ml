@@ -78,7 +78,7 @@ export default async (request: Request, response: Response): Promise<void> => {
 
   response.json({
     msg: 'Successfully saved url!',
-    url: `https://${request.hostname}/${slug}`,
+    url: `https://zeig.ml/${slug}`,
     slug,
     password: !!body.password,
     validUntil: body.validUntil ?? null,

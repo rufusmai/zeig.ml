@@ -59,6 +59,9 @@ export const checkSlug = async (slug: string): Promise<boolean> => {
 export const authorizeRoute = async (slug: string, password: string): Promise<UrlRoute> => {
   const auth = btoa(`:${password}`)
   const response = await http.get(`/url/${slug}`, {
+    params: {
+      visit: true
+    },
     headers: {
       authorization: `Basic ${auth}`
     }

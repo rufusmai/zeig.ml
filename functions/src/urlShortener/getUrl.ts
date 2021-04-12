@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { getUrlRoute, UrlRoute } from '../lib/db'
+import * as admin from 'firebase-admin'
 
 export default (req: Request, res: Response): void => {
   const {
@@ -15,6 +16,16 @@ export default (req: Request, res: Response): void => {
           created: route.created,
           validUntil: route.validUntil,
         })
+
+        if (req.query.visit) {
+          console.log(req.query)
+          admin
+              .database()
+              .ref(`routes/${slug}`)
+              .update({
+                visits: admin.database.ServerValue.increment(1),
+              })
+        }
       })
       .catch(() => {
         res.status(404).json({
