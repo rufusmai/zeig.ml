@@ -37,13 +37,13 @@ const SuccessBox: React.FC<Props> = ({ shortUrl, onClose }) => {
 
   return (
     <>
-      <div className="flex items-center">
-        <CheckIcon className="w-16 h-16 text-green-500 dark:text-green-400" />
-        <div className="ml-3">
-          <span className="text-green-600 dark:text-green-400 text-sm">Deine Url ist live!</span>
-          <div className="group relative pr-8">
-            <a className="block text-2xl font-semibold" href={shortUrl.url} target="_blank" rel="noopener">
-              {shortUrl.url}
+      <div className="flex flex-wrap text-center sm:text-left items-center justify-center">
+        <CheckIcon className="hidden sm:block w-16 h-16 text-green-500 dark:text-green-400" />
+        <div className="sm:ml-3 w-full sm:w-auto">
+          <div className="text-green-600 dark:text-green-400 text-sm">Deine Url ist live!</div>
+          <div className="inline-block group relative pr-8">
+            <a className="block text-2xl font-semibold break-words" href={shortUrl.url} target="_blank" rel="noopener">
+              zeig.ml/{shortUrl.slug}
             </a>
             <button
               type="button"
@@ -55,7 +55,7 @@ const SuccessBox: React.FC<Props> = ({ shortUrl, onClose }) => {
             </button>
           </div>
         </div>
-        <div className="ml-auto text-right">
+        <div className="sm:ml-auto sm:text-right mt-4 sm:mt-0">
           <div>
             <span
               className="inline-flex items-center mr-1 text-xs py-0.5 px-1 bg-gray-100 dark:bg-gray-900 rounded text-gray-400 uppercase">
@@ -77,7 +77,7 @@ const SuccessBox: React.FC<Props> = ({ shortUrl, onClose }) => {
       </div>
       <button
         type="button"
-        className="mt-2 flex items-center text-blue-500 dark:text-blue-400 text-sm font-semibold focus:outline-none hover:text-blue-400 dark:hover:text-blue-300 transition-colors ease-in-out duration-200"
+        className="mt-4 sm:mt-2 mx-auto sm:mx-0 flex items-center text-blue-500 dark:text-blue-400 text-sm font-semibold focus:outline-none hover:text-blue-400 dark:hover:text-blue-300 transition-colors ease-in-out duration-200"
         onClick={onClose}
       >
         <CursorClickIcon className="w-4 h-4 inline-block mr-1" />

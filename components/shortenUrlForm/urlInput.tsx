@@ -29,6 +29,7 @@ const UrlInput: React.FC<Props> = ({ url, setUrl, onClose, urlSet, urlValid, loa
             className="min-w-0 w-full h-12 -mt-1 mr-2 text-4xl font-bold bg-transparent border-none focus:outline-none placeholder-gray-400 dark:placeholder-gray-500"
             value={url}
             onInput={handleInput}
+            disabled={done}
             autoComplete="url"
             autoFocus
           />
