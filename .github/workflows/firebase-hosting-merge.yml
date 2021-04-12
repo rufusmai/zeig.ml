@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: |
+          cd functions
+          yarn && yarn build
+          cd ..
       - run: yarn && yarn run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
