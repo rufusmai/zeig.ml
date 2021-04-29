@@ -3,6 +3,16 @@ import { UrlRoute } from './db'
 import { Payload, verifyToken } from './auth/jwt'
 import { checkPassword } from './auth/password'
 
+/**
+ * Checks if a valid authentication method was used to access a given password protected {@link UrlRoute}
+ * One of the following criteria must be fulfilled:
+ *  - The request provides a valid JWT token that acts like a one-time password
+ *    (either as Bearer Token or provided as query string parameter)
+ *  - The request provides the {@link UrlRoute} password using Basic Authentication
+ *
+ * @param {Request} req express request
+ * @param {UrlRoute} route password protected url route
+ */
 export const checkAuthentication = async (req: Request, route: UrlRoute): Promise<boolean> => {
   const tokenVerifier = ({ slug }: Payload): boolean => req.params.slug === slug
   const errorHandler = () => false

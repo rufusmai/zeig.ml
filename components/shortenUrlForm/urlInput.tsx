@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react'
-import { LinkIcon, XIcon, CursorClickIcon } from '@heroicons/react/outline'
+import { LinkIcon, BackspaceIcon, CheckIcon } from '@heroicons/react/outline'
 import { ExclamationIcon } from '@heroicons/react/solid'
 
 type Props = {
@@ -35,7 +35,7 @@ const UrlInput: React.FC<Props> = ({ url, setUrl, onClose, urlSet, urlValid, loa
           />
           {urlSet && !loading && !done &&
             <button type="button" onClick={onClose} className={`focus:outline-none ${urlValid && 'hidden sm:block'}`}>
-            <XIcon className="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 self-center w-8 h-8 transition-colors duration-200 ease-in-out" />
+            <BackspaceIcon className="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 self-center w-8 h-8 transition-colors duration-200 ease-in-out" />
           </button>
           }
         </label>
@@ -54,9 +54,9 @@ const UrlInput: React.FC<Props> = ({ url, setUrl, onClose, urlSet, urlValid, loa
         <button
           type="submit"
           title={urlValid ? 'Kurze URL erstellen' : 'Bitte korrigiere die URL'}
-          className="text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 ease-in-out focus:outline-none"
+          className="ml-1 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 ease-in-out focus:outline-none"
         >
-          <CursorClickIcon className="w-10 h-10" style={{transform: 'scale(-1,1)'}} />
+          <CheckIcon className="w-10 h-10" />
         </button>
       }
     </div>

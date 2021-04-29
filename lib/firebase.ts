@@ -13,16 +13,19 @@ const firebaseConfig = {
   measurementId: 'G-4507QNJ6LY'
 }
 
+let db: firebase.database.Database
+let auth: firebase.auth.Auth
+
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig)
-}
 
-const db: firebase.database.Database = firebase.database()
-const auth: firebase.auth.Auth = firebase.auth()
+  db = firebase.database()
+  auth = firebase.auth()
 
-if (process.env.NODE_ENV === 'development') {
-  db.useEmulator('localhost', 9000)
-  auth.useEmulator('http://localhost:9099')
+  if (process.env.NODE_ENV === 'development') {
+    db.useEmulator('localhost', 9000)
+    auth.useEmulator('http://localhost:9099')
+  }
 }
 
 export const getUserOrCreate = async (): Promise<firebase.User> => {

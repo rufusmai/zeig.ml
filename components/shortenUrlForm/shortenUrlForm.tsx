@@ -9,8 +9,8 @@ import SuccessBox from './modal/successBox'
 import { shortenUrl, UrlVisibility } from '../../lib/api'
 import { getRandomSlug } from '../../lib/slug'
 import { UrlRoute } from '../../functions/src/lib/db'
+import { validateUrl } from '../../lib/url'
 
-const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/
 const visibilities: UrlVisibility[] = [
   { id: 'infinite', name: 'Immer', time: -1 },
   { id: '5min', name: '5 Minuten', time: 5 },
@@ -18,14 +18,14 @@ const visibilities: UrlVisibility[] = [
   { id: '1h', name: 'Eine Stunde', time: 60 },
   { id: '1d', name: 'Ein Tag', time: 60 * 24 },
 ]
-const randomSlug: string = getRandomSlug()
+let randomSlug: string = getRandomSlug()
 
 const ShortenUrlForm: React.FC = () => {
   const [url, setUrl] = useState('')
   const [urlSet, setUrlSet] = useState(false)
   const [urlValid, setUrlValid] = useState(false)
   const [slug, setSlug] = useState('')
-  const [slugValid, setSlugValid] = useState(true)
+  const [slugError, setSlugError] = useState<number|undefined>(undefined)
   const [visibility, setVisibility] = useState(visibilities[0])
   const [password, setPassword] = useState<string|undefined>(undefined)
   const [loading, setLoading] = useState(false)
@@ -35,18 +35,22 @@ const ShortenUrlForm: React.FC = () => {
   const reset = () => {
     setUrl('')
     setSlug('')
-    setSlugValid(true)
+    setSlugError(undefined)
     setVisibility(visibilities[0])
     setPassword(undefined)
     setLoading(false)
     setShortUrl(undefined)
+
+    randomSlug = getRandomSlug()
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (slugValid && !loading && !shortUrl) {
+    console.log('submitting...')
+    if (!slugError && !loading && !shortUrl) {
       setLoading(true)
+      console.log('submit')
 
       shortenUrl({
         slug: slug ? slug : randomSlug,
@@ -58,8 +62,8 @@ const ShortenUrlForm: React.FC = () => {
         setShortUrl(shortUrl)
       }).catch(error => {
         if (error.response) {
-          if (error.response.status === 400) {
-            setSlugValid(false)
+          if ([400, 422].includes(error.response.status)) {
+            setSlugError(error.response.status)
           } else if (error.response.status === 429) {
             setLimitReached(true)
           }
@@ -71,7 +75,7 @@ const ShortenUrlForm: React.FC = () => {
   }
 
   useEffect(() => setUrlSet(url.length > 0))
-  useEffect(() => setUrlValid(urlRegex.test(url)))
+  useEffect(() => setUrlValid(validateUrl(url)))
 
   let option
   if (!shortUrl && !loading && !limitReached) {
@@ -84,8 +88,8 @@ const ShortenUrlForm: React.FC = () => {
       visibility={visibility}
       setVisibility={setVisibility}
       visibilities={visibilities}
-      slugValid={slugValid}
-      setSlugValid={setSlugValid}
+      slugError={slugError}
+      setSlugError={setSlugError}
     />
   } else if (limitReached) {
     option = <ErrorBox />
@@ -120,7 +124,7 @@ const ShortenUrlForm: React.FC = () => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Modal valid={slugValid && !limitReached}>
+          <Modal valid={!slugError && !limitReached}>
             {option}
           </Modal>
         </Transition>

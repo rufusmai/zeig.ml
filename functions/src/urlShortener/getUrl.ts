@@ -2,6 +2,13 @@ import { Request, Response } from 'express'
 import { getUrlRoute, UrlRoute } from '../lib/db'
 import * as admin from 'firebase-admin'
 
+/**
+ * Returns public data for a specific shortened url that will be determined by the slug query parameter
+ * Should be used with a middleware that authorizes password protected urls
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
 export default (req: Request, res: Response): void => {
   const {
     params: { slug },
@@ -13,8 +20,6 @@ export default (req: Request, res: Response): void => {
           slug: route.slug,
           url: route.url,
           password: Object.prototype.hasOwnProperty.call(route, 'password'),
-          created: route.created,
-          validUntil: route.validUntil,
         })
 
         if (req.query.visit) {

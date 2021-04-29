@@ -4,7 +4,7 @@ import { ChatAltIcon } from '@heroicons/react/solid'
 const ErrorBox = () => {
   return (
     <div className="flex">
-      <LockClosedIcon className="w-16 h-16 text-gray-400 dark:text-gray-600" />
+      <LockClosedIcon className="w-16 h-16 text-gray-400 dark:text-gray-500" />
       <div className="ml-3">
         <h1 className="text-2xl font-bold max-w-sm">
           Du hast das Limit von 5 Anfragen pro Tag erreicht!

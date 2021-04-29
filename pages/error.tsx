@@ -10,6 +10,7 @@ import { NextPage } from 'next'
 const getMessage = (status: number): string => {
   switch (status) {
     case 404: return 'Diese Url existiert nicht mehr!'
+    case 422: return 'Ungültiger Slug'
     default: return 'Ein Fehler ist aufgetreten'
   }
 }
@@ -30,8 +31,6 @@ const Error: NextPage = () => {
     <Fragment>
       <Head>
         <title>Zugangsdaten benötigt | zeig.ml</title>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
       </Head>
 
       <main className="flex flex-wrap flex-col min-h-screen w-full md:container">

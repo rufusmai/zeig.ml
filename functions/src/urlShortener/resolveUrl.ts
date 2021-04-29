@@ -2,6 +2,14 @@ import * as admin from 'firebase-admin'
 import { Request, Response } from 'express'
 import { UrlRoute } from '../lib/db'
 
+/**
+ * Redirects to the target url that this shortened url points to.
+ * The short url is determined by the slug query string parameter.
+ * If the slug is invalid or password protected, this will redirect to the error page.
+ *
+ * @param {Request} request
+ * @param {Response} response
+ */
 export default async (request: Request, response: Response): Promise<void> => {
   const {
     params: { slug },

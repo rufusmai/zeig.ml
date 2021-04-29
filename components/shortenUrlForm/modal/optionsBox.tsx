@@ -1,8 +1,9 @@
-import { useState, useEffect, Fragment, ChangeEvent } from 'react'
+import { useEffect, Fragment, ChangeEvent } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { LockClosedIcon, CheckIcon } from '@heroicons/react/solid'
-import { SelectorIcon, XIcon } from '@heroicons/react/outline'
+import { SelectorIcon, BackspaceIcon } from '@heroicons/react/outline'
 import { checkSlug, UrlVisibility } from '../../../lib/api'
+import { validateSlug } from '../../../lib/slug'
 
 type Props = {
   slug: string,
@@ -13,24 +14,41 @@ type Props = {
   visibility: UrlVisibility,
   setVisibility: (visibility: UrlVisibility) => void,
   visibilities: UrlVisibility[],
-  slugValid: boolean,
-  setSlugValid: (valid: boolean) => void
+  slugError: number|undefined,
+  setSlugError: (valid: number|undefined) => void
 }
 
-const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setPassword, visibility, setVisibility, visibilities, slugValid, setSlugValid }) => {
-  const [slugSet, setSlugSet] = useState(false)
+const getErrorMessage = (error: number|undefined): string => {
+  switch (error) {
+    case 400: return 'Diese URL ist bereits vergeben!'
+    case 422: return 'Nur Buchstaben, Zahlen und (Unter-)Striche sind erlaubt!'
+    default: return 'Diese URL ist ungültig'
+  }
+}
 
+const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setPassword, visibility, setVisibility, visibilities, slugError, setSlugError }) => {
+  const handleSlugInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const slug = e.target.value
+
+    if (e.target.value && !validateSlug(slug)) {
+      setSlugError(422)
+    } else {
+      setSlugError(undefined)
+    }
+
+    setSlug(slug)
+  }
   const handlePasswordInput = (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)
   const enablePassword = (enable: boolean) => setPassword(enable ? '' : undefined)
-  const validateSlug = async (slug: string) => {
-    const valid = await checkSlug(slug)
-    setSlugValid(valid)
+  const checkSlugError = async (slug: string) => {
+    if (!await checkSlug(slug)) {
+      setSlugError(400)
+    }
   }
 
-  useEffect(() => setSlugSet(slug.length > 0))
   useEffect(() => {
-    if (slugSet) {
-      const timeOutId = setTimeout(() => validateSlug(slug), 500)
+    if (slug && !slugError) {
+      const timeOutId = setTimeout(() => checkSlugError(slug), 500)
       return () => clearTimeout(timeOutId)
     }
   })
@@ -50,12 +68,12 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
             className={`pl-24 font-bold min-w-0 w-full focus:outline-none bg-transparent placeholder-gray-300 dark:placeholder-gray-500 leading-tight transition-colors duration-200 ease-in-out`}
             placeholder={randomSlug}
             value={slug}
-            onInput={(e: ChangeEvent<HTMLInputElement>) => setSlug(e.target.value)}
+            onInput={handleSlugInput}
             autoComplete="off"
           />
         </div>
         <Transition
-          show={!slugValid}
+          show={!!slugError}
           enter="transition-opacity duration-200"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -64,12 +82,12 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
           leaveTo="opacity-0"
         >
           <div className="text-xs text-red-500 dark:text-red-400">
-            Diese URL ist bereits vergeben!
+            {getErrorMessage(slugError)}
           </div>
         </Transition>
 
         <div className="mt-2">
-          { password !== undefined
+          {password !== undefined
             ? <div>
               <span className="text-sm text-gray-500 dark:text-gray-400">Passwort:</span>
               <div className="relative">
@@ -86,7 +104,7 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
                   className="absolute text-gray-300 dark:text-gray-400 hover:text-gray-500 dark:hover:text-gray-200 right-0 top-1/2 transform -translate-y-1/2 transition-colors ease-in-out duration-200 focus:outline-none"
                   onClick={() => enablePassword(false)}
                 >
-                  <XIcon className="h-5 w-5" />
+                  <BackspaceIcon className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -101,30 +119,45 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
           }
         </div>
       </div>
-      <div className="relative flex-none w-full sm:w-auto mt-2 sm:mt-0 sm:ml-auto">
+      <div className="relative text-left sm:text-right flex-none w-full sm:w-36 mt-2 sm:mt-0 sm:ml-auto">
         <span className="text-sm text-gray-500 dark:text-gray-400">Sichtbarkeit:</span>
         <Listbox value={visibility} onChange={value => setVisibility(value)}>
-          <Listbox.Button className="w-full min-w-min sm:w-auto mt-1 flex items-center justify-between dark:bg-gray-700 border border-gray-300 dark:border-gray-500 rounded-lg focus:ring focus:outline-none shadow-sm pl-3 pr-2 py-2">
-            <span className="flex-none">{visibility.name}</span>
-            <SelectorIcon className="w-5 h-5 text-gray-400 flex-none" />
-          </Listbox.Button>
-          <Listbox.Options className="absolute focus:outline-none py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-lg shadow-sm">
-            {visibilities.map((visibility: UrlVisibility) => (
-              <Listbox.Option as={Fragment} key={visibility.id} value={visibility}>
-                {({ active, selected }) => (
-                  <li className={`relative px-3 py-2 pr-9 ${active && `bg-gray-100 dark:bg-gray-700`} ${selected && 'bg-gray-200 dark:bg-gray-600'}`}>
-                    {visibility.name}
+          {({ open }) => (
+            <>
+              <Listbox.Button className="w-full min-w-min sm:w-auto ml-auto mt-1 flex items-center justify-between dark:bg-gray-700 border border-gray-300 dark:border-gray-500 rounded-lg focus:ring focus:outline-none shadow-sm pl-3 pr-2 py-2">
+                <span className="flex-none">{visibility.name}</span>
+                <SelectorIcon className="w-5 h-5 text-gray-400 flex-none" />
+              </Listbox.Button>
+              <Transition
+                show={open}
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options
+                  static
+                  className="absolute text-left w-full focus:outline-none py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-lg shadow-sm"
+                >
+                  {visibilities.map((visibility: UrlVisibility) => (
+                    <Listbox.Option as={Fragment} key={visibility.id} value={visibility}>
+                      {({ active, selected }) => (
+                        <li className={`relative px-3 py-2 pr-9 ${active && `bg-gray-100 dark:bg-gray-700`} ${selected && 'bg-gray-200 dark:bg-gray-600'}`}>
+                          {visibility.name}
 
-                    {selected &&
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-                      <CheckIcon className="w-5 h-5" />
-                    </span>
-                    }
-                  </li>
-                )}
-              </Listbox.Option>
-            ))}
-          </Listbox.Options>
+                          {selected &&
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+                            <CheckIcon className="w-5 h-5" />
+                          </span>
+                          }
+                        </li>
+                      )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Transition>
+            </>
+          )}
         </Listbox>
       </div>
     </div>
