@@ -39,7 +39,7 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
     }
 
     if (slug.length < defaultSlugLenght) {
-    setSlug(slug)
+     setSlug(slug)
     }
   }
   const handlePasswordInput = (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)
@@ -123,11 +123,11 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
           }
           {slug.length === defaultSlugLenght - 1
               ? <strong className={"pl-4 text-red-500 hover:text-red-300"}>
-                    Deine URL darf nicht länger sein!
+                  Deine URL darf nicht länger sein!
                 </strong>
                 : slug.length > defaultSlugLenght - 4
                   ? <strong className={"pl-4 text-red-300 hover:text-red-400"}>
-                        Deine URL ist gleich zu lang!
+                      Deine URL ist gleich zu lang!
                     </strong>
                   : undefined
             }
