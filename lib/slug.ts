@@ -1,15 +1,20 @@
-const bas64url = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'
+const BASE64_URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'
 
 /**
  * checks if input is valid base64url
  */
-const slugRegex = /^[A-Za-z0-9\-_]*$/
+const SLUG_REGEX = /^[A-Za-z0-9\-_]*$/
 
 /**
  * All reserved words, that can not be used as slug
  * These may be used as internal urls
  */
-const forbiddenSlugs = ['url', 'dashboard', 'authorize', 'error', 'api', 'docs', 'app']
+const FORBIDDEN_SLUGS = ['url', 'dashboard', 'authorize', 'error', 'api', 'docs', 'app']
+
+/**
+ * The maximum of chars a slug can contain
+ */
+export const MAX_SLUG_LENGTH = 16
 
 /**
  * Generates a valid random (not unique) slug
@@ -19,8 +24,8 @@ const forbiddenSlugs = ['url', 'dashboard', 'authorize', 'error', 'api', 'docs',
 export const getRandomSlug = (length = 6): string => {
   let result = ''
   for (let i = 0; i < length; i++) {
-    result += bas64url.charAt(
-      Math.floor(Math.random() * bas64url.length)
+    result += BASE64_URL.charAt(
+      Math.floor(Math.random() * BASE64_URL.length)
     )
   }
 
@@ -33,4 +38,8 @@ export const getRandomSlug = (length = 6): string => {
  *
  * @param slug
  */
-export const validateSlug = (slug: string): boolean => slugRegex.test(slug) && !forbiddenSlugs.includes(slug)
+export const validateSlug = (slug: string): boolean => {
+  return SLUG_REGEX.test(slug)
+    && !FORBIDDEN_SLUGS.includes(slug)
+    && slug.length <= MAX_SLUG_LENGTH
+}

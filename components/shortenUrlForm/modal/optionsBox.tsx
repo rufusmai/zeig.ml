@@ -3,7 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { LockClosedIcon, CheckIcon } from '@heroicons/react/solid'
 import { SelectorIcon, BackspaceIcon } from '@heroicons/react/outline'
 import { checkSlug, UrlVisibility } from '../../../lib/api'
-import { validateSlug } from '../../../lib/slug'
+import { validateSlug, MAX_SLUG_LENGTH } from '../../../lib/slug'
 
 type Props = {
   slug: string,
@@ -21,7 +21,7 @@ type Props = {
 const getErrorMessage = (error: number|undefined): string => {
   switch (error) {
     case 400: return 'Diese URL ist bereits vergeben!'
-    case 422: return 'Nur Buchstaben, Zahlen und (Unter-)Striche sind erlaubt!'
+    case 422: return `Max ${MAX_SLUG_LENGTH} Zeichen. Nur Buchstaben, Zahlen und (Unter-)Striche sind erlaubt!`
     default: return 'Diese URL ist ungültig'
   }
 }
