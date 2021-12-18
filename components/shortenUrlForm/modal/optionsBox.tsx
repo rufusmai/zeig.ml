@@ -3,9 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { LockClosedIcon, CheckIcon } from '@heroicons/react/solid'
 import { SelectorIcon, BackspaceIcon } from '@heroicons/react/outline'
 import { checkSlug, UrlVisibility } from '../../../lib/api'
-import { validateSlug } from '../../../lib/slug'
-
-const defaultSlugLenght = 12;
+import { validateSlug, MAX_SLUG_LENGTH } from '../../../lib/slug'
 
 type Props = {
   slug: string,
@@ -23,7 +21,7 @@ type Props = {
 const getErrorMessage = (error: number|undefined): string => {
   switch (error) {
     case 400: return 'Diese URL ist bereits vergeben!'
-    case 422: return 'Nur Buchstaben, Zahlen und (Unter-)Striche sind erlaubt!'
+    case 422: return `Max ${MAX_SLUG_LENGTH} Zeichen. Nur Buchstaben, Zahlen und (Unter-)Striche sind erlaubt!`
     default: return 'Diese URL ist ungültig'
   }
 }
@@ -38,9 +36,7 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
       setSlugError(undefined)
     }
 
-    if (slug.length < defaultSlugLenght) {
-     setSlug(slug)
-    }
+    setSlug(slug)
   }
   const handlePasswordInput = (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)
   const enablePassword = (enable: boolean) => setPassword(enable ? '' : undefined)
@@ -121,16 +117,6 @@ const OptionsBox: React.FC<Props> = ({ slug, randomSlug, setSlug, password, setP
               Mit Passwort schützen
             </button>
           }
-          {slug.length === defaultSlugLenght - 1
-              ? <strong className={"pl-4 text-red-500 hover:text-red-300"}>
-                  Deine URL darf nicht länger sein!
-                </strong>
-                : slug.length > defaultSlugLenght - 4
-                  ? <strong className={"pl-4 text-red-300 hover:text-red-400"}>
-                      Deine URL ist gleich zu lang!
-                    </strong>
-                  : undefined
-            }
         </div>
       </div>
       <div className="relative text-left sm:text-right flex-none w-full sm:w-36 mt-2 sm:mt-0 sm:ml-auto">
